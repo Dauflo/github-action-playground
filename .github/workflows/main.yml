@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Get last stable release
-        uses: rez0n/actions-github-release@v1.7
+        uses: rez0n/actions-github-release@main
         id: stable_release_tag
         env:
           token: ${{ secrets.GITHUB_TOKEN }}
