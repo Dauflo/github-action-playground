@@ -1,21 +1,32 @@
-name: Do thing if tag
+name: Auto Release Note Generation CI
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [published]
 
 jobs:
-  check_pr_label_job:
+  release-note:
+    if: startsWith(github.ref, 'refs/tags') && !github.event.release.prerelease
     runs-on: ubuntu-latest
-    name: A job to check the PR labels contain given labels
     steps:
-    - name: Check PR labels action step
-      id: check_pr_labels
-      uses: shioyang/check-pr-labels-on-push-action@v1.0.3
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        labels: '["enhancement"]'
-    - name: See result
-      if: ${{ steps.check_pr_labels.outputs.result == 'true' }}
-      run: echo "This is the good label"
+      - uses: actions/checkout@v2
+      - name: Get last stable release
+        uses: rez0n/actions-github-release@v1.7
+        id: stable_release_tag
+        env:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          type: stable
+      - name: Create changelog
+        uses: mikepenz/release-changelog-builder-action@v1.4.2
+        id: github_release
+        with:
+          fromTag: ${{ steps.stable_release_tag.outputs.release }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Update Release
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          body: ${{ steps.github_release.outputs.changelog }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: ${{ github.event.release.prerelease }}
