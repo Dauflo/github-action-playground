@@ -16,7 +16,7 @@ jobs:
         env:
           token: ${{ secrets.GITHUB_TOKEN }}
           type: stable
-          repositoty: Dauflo/github-action-playground
+          repositoty: "Dauflo/github-action-playground"
       - name: Create changelog
         uses: mikepenz/release-changelog-builder-action@v1.4.2
         id: github_release
