@@ -11,7 +11,8 @@ jobs:
 
       - name: Get commit
         id: commit
-        run: echo ::set-output name=commit_value::$(echo ${GITHUB_SHA})
+        # run: echo ::set-output name=commit_value::$(echo ${GITHUB_SHA})
+        run: echo "commit=$(echo ${GITHUB_SHA})" >> $GITHUB_OUTPUT
 
       - name: Check if it worked
         run: echo ${{ steps.commit.outputs.commit_value }}
